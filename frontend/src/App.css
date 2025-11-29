@@ -1,0 +1,275 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-card input {
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.auth-card input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-card button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 5px;
+  background: #667eea;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.auth-card button:hover {
+  background: #5568d3;
+}
+
+.toggle-auth {
+  margin-top: 1rem;
+  text-align: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+}
+
+.movies-container {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #333;
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logout-btn {
+  padding: 0.5rem 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #c0392b;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.accordion-section {
+  margin-bottom: 2rem;
+  border: 1px solid #444;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  background: #2a2a2a;
+  transition: background 0.3s;
+  user-select: none;
+}
+
+.accordion-header:hover {
+  background: #333;
+}
+
+.accordion-header h2 {
+  margin: 0;
+  color: #667eea;
+  font-size: 1.5rem;
+}
+
+.accordion-icon {
+  color: #667eea;
+  font-size: 0.8rem;
+  transition: transform 0.3s;
+}
+
+.accordion-content {
+  padding: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.rated-movies-section {
+  margin-bottom: 2rem;
+}
+
+.rated-movies-section h2 {
+  margin-bottom: 1.5rem;
+  color: #667eea;
+}
+
+.recommendations-section,
+.all-movies-section {
+  margin-bottom: 2rem;
+}
+
+.recommendations-section h2,
+.all-movies-section h2 {
+  margin-bottom: 1.5rem;
+  color: #667eea;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.movie-card {
+  background: #2a2a2a;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.movie-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+}
+
+.movie-card h3 {
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.movie-year {
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.movie-director {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.rating-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #444;
+}
+
+.rating-section p {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.rating-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rating-buttons button {
+  padding: 0.5rem;
+  min-width: 40px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.rating-buttons button:hover {
+  background: #444;
+  border-color: #667eea;
+}
+
+.rating-buttons button.active {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.rating-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.5rem;
+}
+
