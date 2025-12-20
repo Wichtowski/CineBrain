@@ -38,7 +38,7 @@ SURREAL_USER = os.getenv("SURREAL_USER", "root")
 SURREAL_PASS = os.getenv("SURREAL_PASS", "root")
 SURREAL_NS = os.getenv("SURREAL_NS", "test")
 SURREAL_DB = os.getenv("SURREAL_DB", "test")
-JWT_SECRET = os.getenv("JWT_SECRET", "your-secret-key-change-in-production")
+JWT_SECRET = os.getenv("JWT_SECRET", "secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 
 surreal_client = SurrealClient(
@@ -528,8 +528,9 @@ async def get_similar_movies(current_user: Dict[str, Any] = Depends(get_current_
             print("No genres or directors found, returning empty recommendations")
             return []
         
-        all_recommended_movies = []
-        seen_movie_ids = set(rated_movie_ids)
+        recommended_movies_by_id = {}
+        recommended_scores_by_id = {}
+        rated_movie_ids_set = set(rated_movie_ids)
         print(f"User has rated {len(rated_movie_ids)} movies")
         
         # Get movies by genre
@@ -554,18 +555,19 @@ async def get_similar_movies(current_user: Dict[str, Any] = Depends(get_current_
                                         for movie in movies:
                                             if isinstance(movie, dict) and "id" in movie:
                                                 movie_id = movie["id"]
-                                                if movie_id not in seen_movie_ids and movie_id.startswith("movie:"):
-                                                    seen_movie_ids.add(movie_id)
-                                                    all_recommended_movies.append(movie)
+                                                if movie_id.startswith("movie:") and movie_id not in rated_movie_ids_set:
+                                                    recommended_movies_by_id[movie_id] = movie
+                                                    recommended_scores_by_id[movie_id] = recommended_scores_by_id.get(movie_id, 0) + 1
                                             elif isinstance(movie, str) and movie.startswith("movie:"):
-                                                if movie not in seen_movie_ids:
-                                                    seen_movie_ids.add(movie)
-                                                    movie_clean = movie.split(":")[-1] if ":" in movie else movie
-                                                    movie_obj = await surreal_client.query(f"SELECT * FROM movie:{movie_clean};")
-                                                    if movie_obj and isinstance(movie_obj, list) and len(movie_obj) > 0:
-                                                        movie_data = movie_obj[0]
-                                                        if isinstance(movie_data, dict):
-                                                            all_recommended_movies.append(movie_data)
+                                                if movie not in rated_movie_ids_set:
+                                                    recommended_scores_by_id[movie] = recommended_scores_by_id.get(movie, 0) + 1
+                                                    if movie not in recommended_movies_by_id:
+                                                        movie_clean = movie.split(":")[-1] if ":" in movie else movie
+                                                        movie_obj = await surreal_client.query(f"SELECT * FROM movie:{movie_clean};")
+                                                        if movie_obj and isinstance(movie_obj, list) and len(movie_obj) > 0:
+                                                            movie_data = movie_obj[0]
+                                                            if isinstance(movie_data, dict) and "id" in movie_data:
+                                                                recommended_movies_by_id[movie_data["id"]] = movie_data
         
         # Get movies by director
         for director in directors:
@@ -579,12 +581,20 @@ async def get_similar_movies(current_user: Dict[str, Any] = Depends(get_current_
                     for movie in movies_by_director:
                         if isinstance(movie, dict) and "id" in movie:
                             movie_id = movie["id"]
-                            if movie_id not in seen_movie_ids and movie_id.startswith("movie:"):
-                                seen_movie_ids.add(movie_id)
-                                all_recommended_movies.append(movie)
+                            if movie_id.startswith("movie:") and movie_id not in rated_movie_ids_set:
+                                recommended_movies_by_id[movie_id] = movie
+                                recommended_scores_by_id[movie_id] = recommended_scores_by_id.get(movie_id, 0) + 1
         
-        print(f"Returning {len(all_recommended_movies)} recommended movies")
-        return all_recommended_movies
+        scored_movies = []
+        for movie_id, movie_data in recommended_movies_by_id.items():
+            score = recommended_scores_by_id.get(movie_id, 0)
+            scored_movies.append((score, movie_id, movie_data))
+        
+        scored_movies.sort(key=lambda x: (-x[0], x[1]))
+        top_movies = [m[2] for m in scored_movies[:10]]
+        
+        print(f"Returning {len(top_movies)} recommended movies")
+        return top_movies
     except Exception as e:
         print(f"Error fetching recommendations: {e}")
         import traceback
