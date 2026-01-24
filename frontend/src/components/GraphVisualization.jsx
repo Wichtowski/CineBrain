@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import * as d3 from 'd3'
 import { api } from '../api/client'
+import '../App.css'
 import './GraphVisualization.css'
 
 const GraphVisualization = () => {
@@ -8,10 +10,32 @@ const GraphVisualization = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [graphData, setGraphData] = useState(null)
+  const [user, setUser] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
+    loadUserInfo()
     fetchGraphData()
   }, [])
+
+  const loadUserInfo = async () => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (e) {
+        console.error('Failed to parse stored user:', e)
+      }
+    }
+    
+    try {
+      const response = await api.get('/api/auth/me')
+      setUser(response.data)
+      localStorage.setItem('user', JSON.stringify(response.data))
+    } catch (error) {
+      console.error('Failed to load user info:', error)
+    }
+  }
 
   const fetchGraphData = async () => {
     try {
@@ -151,36 +175,97 @@ const GraphVisualization = () => {
     }
   }, [graphData])
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    navigate('/')
+  }
+
   if (loading) {
-    return <div className="graph-loading">Loading graph data...</div>
+    return (
+      <div className="graph-page">
+        <header className="header">
+          <h1>CineBrain</h1>
+          <nav className="header-nav">
+            <Link to="/movies" className="nav-link">Movies</Link>
+            <Link to="/graph" className="nav-link">Graph View</Link>
+          </nav>
+          <div className="header-user-info">
+            {user && (
+              <span className="user-name">
+                {user.name || user.email || 'User'}
+              </span>
+            )}
+            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          </div>
+        </header>
+        <div className="graph-loading">Loading graph data...</div>
+      </div>
+    )
   }
 
   if (error) {
-    return <div className="graph-error">Error: {error}</div>
+    return (
+      <div className="graph-page">
+        <header className="header">
+          <h1>CineBrain</h1>
+          <nav className="header-nav">
+            <Link to="/movies" className="nav-link">Movies</Link>
+            <Link to="/graph" className="nav-link">Graph View</Link>
+          </nav>
+          <div className="header-user-info">
+            {user && (
+              <span className="user-name">
+                {user.name || user.email || 'User'}
+              </span>
+            )}
+            <button onClick={handleLogout} className="logout-btn">Logout</button>
+          </div>
+        </header>
+        <div className="graph-error">Error: {error}</div>
+      </div>
+    )
   }
 
   return (
-    <div className="graph-container">
-      <div className="graph-header">
-        <h2>User-Movie Connections Graph</h2>
-        <div className="graph-legend">
-          <div className="legend-item">
-            <div className="legend-color user"></div>
-            <span>Users</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-color movie"></div>
-            <span>Movies</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-line"></div>
-            <span>Ratings (thickness = score)</span>
+    <div className="graph-page">
+      <header className="header">
+        <h1>CineBrain</h1>
+        <nav className="header-nav">
+          <Link to="/movies" className="nav-link">Movies</Link>
+          <Link to="/graph" className="nav-link">Graph View</Link>
+        </nav>
+        <div className="header-user-info">
+          {user && (
+            <span className="user-name">
+              {user.name || user.email || 'User'}
+            </span>
+          )}
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
+        </div>
+      </header>
+      <div className="graph-container">
+        <div className="graph-header">
+          <h2>User-Movie Connections Graph</h2>
+          <div className="graph-legend">
+            <div className="legend-item">
+              <div className="legend-color user"></div>
+              <span>Users</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color movie"></div>
+              <span>Movies</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-line"></div>
+              <span>Ratings (thickness = score)</span>
+            </div>
           </div>
         </div>
-      </div>
-      <svg ref={svgRef} className="graph-svg"></svg>
-      <div className="graph-instructions">
-        <p>💡 Drag nodes to rearrange • Scroll to zoom • Hover for details</p>
+        <svg ref={svgRef} className="graph-svg"></svg>
+        <div className="graph-instructions">
+          <p>💡 Drag nodes to rearrange • Scroll to zoom • Hover for details</p>
+        </div>
       </div>
     </div>
   )

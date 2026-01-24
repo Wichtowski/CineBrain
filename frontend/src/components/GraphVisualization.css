@@ -1,6 +1,13 @@
+.graph-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a2e;
+}
+
 .graph-container {
   width: 100%;
-  height: calc(100vh - 80px);
+  flex: 1;
   display: flex;
   flex-direction: column;
   background: #1a1a2e;
@@ -111,19 +118,6 @@
   text-anchor: middle;
   pointer-events: none;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.graph-instructions {
-  padding: 15px 20px;
-  background: #16213e;
-  border-top: 2px solid #0f3460;
-  text-align: center;
-  font-size: 14px;
-  color: #aaa;
-}
-
-.graph-instructions p {
-  margin: 0;
 }
 
 .graph-loading,
