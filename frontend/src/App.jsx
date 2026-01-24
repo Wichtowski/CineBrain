@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { api } from './api/client'
 import { ToastProvider, useToast } from './components/Toast'
+import GraphVisualization from './components/GraphVisualization'
 import './App.css'
 
 const Login = () => {
@@ -180,6 +181,10 @@ const Movies = () => {
     <div className="movies-container">
       <header className="header">
         <h1>CineBrain</h1>
+        <nav className="header-nav">
+          <Link to="/movies" className="nav-link">Movies</Link>
+          <Link to="/graph" className="nav-link">Graph View</Link>
+        </nav>
         <div className="header-user-info">
           {user && (
             <span className="user-name">
@@ -305,6 +310,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/movies" element={<Movies />} />
+          <Route path="/graph" element={<GraphVisualization />} />
         </Routes>
       </Router>
     </ToastProvider>

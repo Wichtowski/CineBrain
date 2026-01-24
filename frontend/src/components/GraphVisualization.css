@@ -1,0 +1,142 @@
+.graph-container {
+  width: 100%;
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  background: #1a1a2e;
+  color: #eee;
+}
+
+.graph-header {
+  padding: 20px;
+  background: #16213e;
+  border-bottom: 2px solid #0f3460;
+}
+
+.graph-header h2 {
+  margin: 0 0 15px 0;
+  color: #00d4ff;
+  font-size: 24px;
+}
+
+.graph-legend {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.legend-color.user {
+  background: #ff6b6b;
+}
+
+.legend-color.movie {
+  background: #4ecdc4;
+}
+
+.legend-line {
+  width: 30px;
+  height: 3px;
+  background: #888;
+}
+
+.graph-svg {
+  flex: 1;
+  width: 100%;
+  background: #1a1a2e;
+  cursor: grab;
+}
+
+.graph-svg:active {
+  cursor: grabbing;
+}
+
+.link {
+  stroke: #888;
+  stroke-opacity: 0.6;
+  stroke-linecap: round;
+}
+
+.link-label {
+  fill: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-anchor: middle;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  stroke: #fff;
+  stroke-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.node circle.user {
+  fill: #ff6b6b;
+}
+
+.node circle.movie {
+  fill: #4ecdc4;
+}
+
+.node:hover circle {
+  stroke-width: 3px;
+  filter: brightness(1.2);
+}
+
+.node-label {
+  fill: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.graph-instructions {
+  padding: 15px 20px;
+  background: #16213e;
+  border-top: 2px solid #0f3460;
+  text-align: center;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.graph-instructions p {
+  margin: 0;
+}
+
+.graph-loading,
+.graph-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #eee;
+  background: #1a1a2e;
+}
+
+.graph-error {
+  color: #ff6b6b;
+}

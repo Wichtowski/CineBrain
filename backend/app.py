@@ -150,7 +150,7 @@ async def startup():
             if has_data(users_after) and has_data(movies_after):
                 print("Fixtures loaded successfully!")
             else:
-                print(f"Warning: Fixtures may not have loaded correctly.")
+                print("Warning: Fixtures may not have loaded correctly.")
                 print(f"Users after: {users_after}, Movies after: {movies_after}")
         else:
             print("Database already contains data, skipping fixture load.")
@@ -362,22 +362,22 @@ async def get_current_user_info(current_user: Dict[str, Any] = Depends(get_curre
     
     return {"id": user_id, "email": current_user.get("email", "")}
 
-@app.get("/api/movies")
-async def get_movies(all: bool = False) -> List[Dict[str, Any]]:
-    try:
-        if all:
-            movies = await surreal_client.query("SELECT * FROM movie ORDER BY year DESC;")
-        else:
-            movies = await surreal_client.query("SELECT * FROM movie WHERE featured = true OR featured IS NONE ORDER BY year DESC;")
-        if not isinstance(movies, list):
-            return []
-        filtered = [m for m in movies if isinstance(m, dict) and m.get("id") and (not isinstance(m.get("id"), str) or (isinstance(m.get("id"), str) and not m.get("id").startswith("Specify")))]
-        return filtered
-    except Exception as e:
-        print(f"Error fetching movies: {e}")
-        import traceback
-        print(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=f"Error fetching movies: {str(e)}")
+# @app.get("/api/movies")
+# async def get_movies(all: bool = False) -> List[Dict[str, Any]]:
+#     try:
+#         if all:
+#             movies = await surreal_client.query("SELECT * FROM movie ORDER BY year DESC;")
+#         else:
+#             movies = await surreal_client.query("SELECT * FROM movie WHERE featured = true OR featured IS NONE ORDER BY year DESC;")
+#         if not isinstance(movies, list):
+#             return []
+#         filtered = [m for m in movies if isinstance(m, dict) and m.get("id") and (not isinstance(m.get("id"), str) or (isinstance(m.get("id"), str) and not m.get("id").startswith("Specify")))]
+#         return filtered
+#     except Exception as e:
+#         print(f"Error fetching movies: {e}")
+#         import traceback
+#         print(traceback.format_exc())
+#         raise HTTPException(status_code=500, detail=f"Error fetching movies: {str(e)}")
 
 @app.get("/api/ratings/my-ratings")
 async def get_my_ratings(current_user: Dict[str, Any] = Depends(get_current_user)) -> List[Dict[str, Any]]:
@@ -461,9 +461,6 @@ async def get_similar_movies(current_user: Dict[str, Any] = Depends(get_current_
         if not rated_movie_ids:
             return []
         
-        rated_movie_ids_list = list(rated_movie_ids)
-        
-        # Get genres and directors from rated movies
         rated_movies_data = await surreal_client.query(
             f"SELECT ->rated->movie AS movie FROM user:{user_id} FETCH ->rated->movie;"
         )
@@ -621,6 +618,61 @@ async def reload_fixtures() -> Dict[str, str]:
         return {"status": "success", "message": "Fixtures loaded successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading fixtures: {str(e)}")
+
+@app.get("/api/graph/data")
+async def get_graph_data() -> Dict[str, Any]:
+    try:
+        users = await surreal_client.query("SELECT id, name, email FROM user;")
+        movies = await surreal_client.query("SELECT id, title, year, director FROM movie;")
+        ratings = await surreal_client.query("SELECT id, in, out, score FROM rated;")
+        
+        users_list = []
+        if users and isinstance(users, list):
+            for user in users:
+                if isinstance(user, dict) and user.get("id"):
+                    users_list.append({
+                        "id": user.get("id", ""),
+                        "name": user.get("name", ""),
+                        "email": user.get("email", "")
+                    })
+        
+        movies_list = []
+        if movies and isinstance(movies, list):
+            for movie in movies:
+                if isinstance(movie, dict) and movie.get("id"):
+                    movies_list.append({
+                        "id": movie.get("id", ""),
+                        "title": movie.get("title", ""),
+                        "year": movie.get("year", None),
+                        "director": movie.get("director", "")
+                    })
+        
+        ratings_list = []
+        if ratings and isinstance(ratings, list):
+            for rating in ratings:
+                if isinstance(rating, dict):
+                    in_node = rating.get("in", "")
+                    out_node = rating.get("out", "")
+                    score = rating.get("score", 0)
+                    
+                    if in_node and out_node and score:
+                        ratings_list.append({
+                            "id": rating.get("id", ""),
+                            "source": in_node,
+                            "target": out_node,
+                            "score": score
+                        })
+        
+        return {
+            "users": users_list,
+            "movies": movies_list,
+            "ratings": ratings_list
+        }
+    except Exception as e:
+        print(f"Error fetching graph data: {e}")
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Error fetching graph data: {str(e)}")
 
 @app.get("/api/health")
 async def health_check() -> Dict[str, str]:
