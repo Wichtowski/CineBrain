@@ -235,19 +235,6 @@ const Movies = () => {
             </div>
           )}
         </section>
-
-        <section className="rated-movies-section">
-          <h2>Rated Movies</h2>
-          <div className="movies-grid">
-            {ratedMovies.length > 0 ? (
-              ratedMovies.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} initialRating={userRatings[movie.id?.split(':')[1] || movie.id]} onRatingUpdate={handleRatingUpdate} />
-              ))
-            ) : (
-              <p>You haven't rated any movies yet. Start rating to see them here!</p>
-            )}
-          </div>
-        </section>
       </div>
     </div>
   )
