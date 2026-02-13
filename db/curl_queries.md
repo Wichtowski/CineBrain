@@ -366,14 +366,3 @@ curl -X POST http://localhost:8000/sql \
   -H "Content-Type: text/plain" \
   --data-raw "USE NS test DB test; SELECT count() FROM user; SELECT count() FROM movie; SELECT count() FROM rated; SELECT count() FROM genre;"
 ```
-
-## Tips
-
-- Replace `user:oskar` with any user ID to query different users
-- Replace `movie:inception` with any movie ID to query different movies
-- Replace `genre:sci_fi` with any genre ID to query different genres
-- Use `FETCH` to automatically load related records
-- Use `ORDER BY` to sort results
-- Use `LIMIT` to restrict the number of results
-- Use `WHERE` to filter results
-
